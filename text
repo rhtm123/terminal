@@ -1,0 +1,23 @@
+# Base Image
+FROM alpine
+
+# Installing required tools
+RUN apk --update add supervisor
+
+# Adding Django Source code to container 
+ADD /django_app /src/django_app
+
+# Adding supervisor configuration file to container
+ADD /supervisor /src/supervisor
+
+# Installing required python modules for app
+RUN pip3 install -r /src/django_app/requirements.txt
+
+# Exposing container port for binding with host
+EXPOSE 8000
+
+# Using Django app directory as home
+WORKDIR /src/django_app
+
+# Initializing Redis server and Gunicorn server from supervisord
+CMD ["supervisord","-c","/src/supervisor/service_script.conf"]
